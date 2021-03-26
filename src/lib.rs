@@ -189,7 +189,7 @@ pub(crate) const PIV_AID: [u8; 5] = [0xa0, 0x00, 0x00, 0x03, 0x08];
 
 /// MGMT Applet ID.
 /// <https://developers.yubico.com/PIV/Introduction/Admin_access.html>
-#[cfg(feature = "untested")]
+
 pub(crate) const MGMT_AID: [u8; 8] = [0xa0, 0x00, 0x00, 0x05, 0x27, 0x47, 0x11, 0x17];
 
 /// YubiKey OTP Applet ID. Needed to query serial on YK4.

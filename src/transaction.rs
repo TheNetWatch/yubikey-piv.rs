@@ -1,24 +1,12 @@
 //! YubiKey PC/SC transactions
 
-use crate::{
-    apdu::Response,
-    apdu::{Ins, StatusWords, APDU},
-    error::Error,
-    key::{AlgorithmId, SlotId},
-    serialization::*,
-    yubikey::*,
-    Buffer, ObjectId, CB_BUF_MAX, CB_OBJ_MAX, PIV_AID, YK_AID,
-};
+use crate::{Buffer, CB_BUF_MAX, CB_OBJ_MAX, MgmKey, ObjectId, PIV_AID, YK_AID, apdu::Response, apdu::{Ins, StatusWords, APDU}, error::Error, key::{AlgorithmId, SlotId}, mgm::DES_LEN_3DES, serialization::*, yubikey::*};
 use log::{error, trace};
 use std::convert::TryInto;
 use zeroize::Zeroizing;
 
-#[cfg(feature = "untested")]
-use crate::mgm::{MgmKey, DES_LEN_3DES};
-
 const CB_PIN_MAX: usize = 8;
 
-#[cfg(feature = "untested")]
 pub(crate) enum ChangeRefAction {
     ChangePin,
     ChangePuk,
@@ -185,7 +173,6 @@ impl<'tx> Transaction<'tx> {
     }
 
     /// Change the PIN.
-    #[cfg(feature = "untested")]
     pub fn change_ref(
         &self,
         action: ChangeRefAction,
@@ -228,7 +215,7 @@ impl<'tx> Transaction<'tx> {
     }
 
     /// Set the management key (MGM).
-    #[cfg(feature = "untested")]
+
     pub fn set_mgm_key(&self, new_key: &MgmKey, require_touch: bool) -> Result<(), Error> {
         let p2 = if require_touch { 0xfe } else { 0xff };
 

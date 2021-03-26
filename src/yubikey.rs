@@ -48,7 +48,6 @@ use std::{
     str::FromStr,
 };
 
-#[cfg(feature = "untested")]
 use crate::{
     apdu::StatusWords, metadata::AdminData, transaction::ChangeRefAction, Buffer, ObjectId,
     MGMT_AID, TAG_ADMIN_FLAGS_1, TAG_ADMIN_TIMESTAMP,
@@ -400,7 +399,7 @@ impl YubiKey {
     /// Change the Personal Identification Number (PIN).
     ///
     /// The default PIN code is 123456
-    #[cfg(feature = "untested")]
+    //#[cfg(feature = "untested")]
     pub fn change_pin(&mut self, current_pin: &[u8], new_pin: &[u8]) -> Result<(), Error> {
         {
             let txn = self.begin_transaction()?;

@@ -55,7 +55,6 @@ use sha1::Sha1;
 
 pub(crate) const ADMIN_FLAGS_1_PROTECTED_MGM: u8 = 0x02;
 
-#[cfg(feature = "untested")]
 const CB_ADMIN_SALT: usize = 16;
 
 /// Default MGM key configured on all YubiKeys
@@ -70,7 +69,7 @@ const DES_LEN_DES: usize = 8;
 pub(crate) const DES_LEN_3DES: usize = DES_LEN_DES * 3;
 
 /// Number of PBKDF2 iterations to use when deriving from a password
-#[cfg(feature = "untested")]
+
 const ITER_MGM_PBKDF2: u32 = 10000;
 
 /// Management Key (MGM) key types (manual/derived/protected)
