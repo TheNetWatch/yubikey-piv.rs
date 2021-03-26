@@ -30,7 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use crate::{TAG_ADMIN_SALT, YubiKey, error::Error, metadata::AdminData};
+use crate::{TAG_ADMIN_FLAGS_1, TAG_ADMIN_SALT, TAG_PROTECTED_MGM, YubiKey, error::Error, metadata::{AdminData, ProtectedData}};
 use getrandom::getrandom;
 use hmac::Hmac;
 use log::{error, info};
@@ -170,7 +170,7 @@ impl MgmKey {
     }
 
     /// Get protected management key (MGM)
-    #[cfg(feature = "untested")]
+    //#[cfg(feature = "untested")]
     pub fn get_protected(yubikey: &mut YubiKey) -> Result<Self, Error> {
         let txn = yubikey.begin_transaction()?;
 
@@ -270,7 +270,7 @@ impl MgmKey {
     /// Configures the given YubiKey to use this as a PIN-protected management key.
     ///
     /// This enables key management operations to be performed with access to the PIN.
-    #[cfg(feature = "untested")]
+    //#[cfg(feature = "untested")]
     pub fn set_protected(&self, yubikey: &mut YubiKey) -> Result<(), Error> {
         let txn = yubikey.begin_transaction()?;
 
