@@ -459,7 +459,7 @@ impl YubiKey {
     /// The PUK is part of the PIV standard that the YubiKey follows.
     ///
     /// The default PUK code is 12345678.
-    #[cfg(feature = "untested")]
+    
     pub fn change_puk(&mut self, current_puk: &[u8], new_puk: &[u8]) -> Result<(), Error> {
         let txn = self.begin_transaction()?;
         txn.change_ref(ChangeRefAction::ChangePuk, current_puk, new_puk)
