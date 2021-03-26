@@ -413,6 +413,16 @@ impl YubiKey {
         Ok(())
     }
 
+    /// Change the MgmKey to a new one.
+    pub fn change_mgmkey(&mut self, key : &MgmKey) -> Result<(), Error> {
+        
+        let txn = self.begin_transaction()?;
+        
+        txn.set_mgm_key(key, true)?;
+        
+        Ok(())
+    }
+
     /// Set PIN last changed
     #[cfg(feature = "untested")]
     pub fn set_pin_last_changed(yubikey: &mut YubiKey) -> Result<(), Error> {
