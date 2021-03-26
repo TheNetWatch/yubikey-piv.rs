@@ -49,7 +49,6 @@ use crate::{
 use log::debug;
 use std::convert::TryFrom;
 
-#[cfg(feature = "untested")]
 use crate::CB_OBJ_MAX;
 use crate::{
     certificate::PublicKeyInfo,
@@ -58,14 +57,9 @@ use crate::{
 };
 use elliptic_curve::sec1::EncodedPoint as EcPublicKey;
 use log::{error, warn};
-#[cfg(feature = "untested")]
-use num_bigint::traits::ModInverse;
-#[cfg(feature = "untested")]
 use num_integer::Integer;
-#[cfg(feature = "untested")]
 use num_traits::{FromPrimitive, One};
 use rsa::{BigUint, RSAPublicKey};
-#[cfg(feature = "untested")]
 use zeroize::Zeroizing;
 
 const CB_ECC_POINTP256: usize = 65;
@@ -75,10 +69,8 @@ const TAG_RSA_MODULUS: u8 = 0x81;
 const TAG_RSA_EXP: u8 = 0x82;
 const TAG_ECC_POINT: u8 = 0x86;
 
-#[cfg(feature = "untested")]
 const KEYDATA_LEN: usize = 1024;
 
-#[cfg(feature = "untested")]
 const KEYDATA_RSA_EXP: u64 = 65537;
 
 /// Slot identifiers.
@@ -393,7 +385,6 @@ impl AlgorithmId {
         Tlv::write(buf, 0x80, &[self.into()])
     }
 
-    #[cfg(feature = "untested")]
     fn get_elem_len(self) -> usize {
         match self {
             AlgorithmId::Rsa1024 => 64,
@@ -403,7 +394,6 @@ impl AlgorithmId {
         }
     }
 
-    #[cfg(feature = "untested")]
     fn get_param_tag(self) -> u8 {
         match self {
             AlgorithmId::Rsa1024 | AlgorithmId::Rsa2048 => 0x01,
@@ -621,8 +611,8 @@ pub fn generate(
             Ok(PublicKeyInfo::Rsa {
                 algorithm,
                 pubkey: RSAPublicKey::new(
-                    BigUint::from_bytes_be(&modulus),
-                    BigUint::from_bytes_be(&exp),
+                    rsa::BigUint::from_bytes_be(&modulus),
+                    rsa::BigUint::from_bytes_be(&exp),
                 )
                 .map_err(|_| Error::InvalidObject)?,
             })
@@ -663,7 +653,6 @@ pub fn generate(
     }
 }
 
-#[cfg(feature = "untested")]
 fn write_key(
     yubikey: &mut YubiKey,
     slot: SlotId,
@@ -711,7 +700,7 @@ fn write_key(
 }
 
 /// The key data that makes up an RSA key.
-#[cfg(feature = "untested")]
+
 pub struct RsaKeyData {
     /// The secret prime `p`.
     p: Buffer,
@@ -725,7 +714,10 @@ pub struct RsaKeyData {
     qinv: Buffer,
 }
 
-#[cfg(feature = "untested")]
+use num_bigint_dig::ToBigUint;
+use num_bigint_dig::traits::ModInverse;
+
+
 impl RsaKeyData {
     /// Generates a new RSA key data set from two randomly generated, secret, primes.
     ///
@@ -741,8 +733,8 @@ impl RsaKeyData {
             p_t.lcm(&q_t)
         };
 
-        let exp = BigUint::from_u64(KEYDATA_RSA_EXP).unwrap();
-
+        let exp : BigUint = BigUint::from_u64(KEYDATA_RSA_EXP).unwrap();  
+        
         let d = exp.mod_inverse(&totient).unwrap();
         let d = d.to_biguint().unwrap();
 
@@ -772,7 +764,7 @@ impl RsaKeyData {
 /// Imports a private RSA encryption or signing key into the YubiKey.
 ///
 /// Errors if `algorithm` isn't `AlgorithmId::Rsa1024` or `AlgorithmId::Rsa2048`.
-#[cfg(feature = "untested")]
+
 pub fn import_rsa_key(
     yubikey: &mut YubiKey,
     slot: SlotId,
