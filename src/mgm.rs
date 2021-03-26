@@ -33,7 +33,7 @@
 use crate::{TAG_ADMIN_SALT, YubiKey, error::Error, metadata::AdminData};
 use getrandom::getrandom;
 use hmac::Hmac;
-use log::error;
+use log::{error, info};
 use nom::AsBytes;
 use sha1::Sha1;
 use std::convert::{TryFrom, TryInto};
@@ -146,6 +146,7 @@ impl MgmKey {
         let data_salt = match admin_data.get_item(TAG_ADMIN_SALT) {
             Ok(i) => i,
             Err(_) => {
+                info!("Setting new salt");
                 admin_data.set_item(TAG_ADMIN_SALT, &salt)?;
 
                 &salt
