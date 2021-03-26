@@ -30,9 +30,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use crate::error::Error;
+use crate::{TAG_ADMIN_SALT, YubiKey, error::Error, metadata::AdminData};
 use getrandom::getrandom;
+use hmac::Hmac;
 use log::error;
+use sha1::Sha1;
 use std::convert::{TryFrom, TryInto};
 use zeroize::{Zeroize, Zeroizing};
 
@@ -48,7 +50,7 @@ use des::{
 };
 #[cfg(feature = "untested")]
 use hmac::Hmac;
-#[cfg(feature = "untested")]
+
 use pbkdf2::pbkdf2;
 #[cfg(feature = "untested")]
 use sha1::Sha1;
@@ -130,7 +132,7 @@ impl MgmKey {
     }
 
     /// Get derived management key (MGM)
-    #[cfg(feature = "untested")]
+   ///#[cfg(feature = "untested")]
     pub fn get_derived(yubikey: &mut YubiKey, pin: &[u8]) -> Result<Self, Error> {
         let txn = yubikey.begin_transaction()?;
 
