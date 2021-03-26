@@ -34,6 +34,7 @@ use crate::{TAG_ADMIN_SALT, YubiKey, error::Error, metadata::AdminData};
 use getrandom::getrandom;
 use hmac::Hmac;
 use log::error;
+use nom::AsBytes;
 use sha1::Sha1;
 use std::convert::{TryFrom, TryInto};
 use zeroize::{Zeroize, Zeroizing};
@@ -136,14 +137,25 @@ impl MgmKey {
     pub fn get_derived(yubikey: &mut YubiKey, pin: &[u8]) -> Result<Self, Error> {
         let txn = yubikey.begin_transaction()?;
 
-        // recover management key
-        let admin_data = AdminData::read(&txn)?;
-        let salt = admin_data.get_item(TAG_ADMIN_SALT)?;
+        let mut salt = [0u8; CB_ADMIN_SALT];
 
-        if salt.len() != CB_ADMIN_SALT {
+        getrandom(&mut salt).unwrap();
+
+        // recover management key
+        let mut admin_data = AdminData::read(&txn)?;
+        let data_salt = match admin_data.get_item(TAG_ADMIN_SALT) {
+            Ok(i) => i,
+            Err(_) => {
+                admin_data.set_item(TAG_ADMIN_SALT, &salt)?;
+
+                &salt
+            }
+        };
+
+        if data_salt.len() != CB_ADMIN_SALT {
             error!(
                 "derived MGM salt exists, but is incorrect size: {} (expected {})",
-                salt.len(),
+                data_salt.len(),
                 CB_ADMIN_SALT
             );
 
@@ -151,7 +163,7 @@ impl MgmKey {
         }
 
         let mut mgm = [0u8; DES_LEN_3DES];
-        pbkdf2::<Hmac<Sha1>>(pin, &salt, ITER_MGM_PBKDF2, &mut mgm);
+        pbkdf2::<Hmac<Sha1>>(pin, &data_salt, ITER_MGM_PBKDF2, &mut mgm);
 
         MgmKey::from_bytes(mgm)
     }
