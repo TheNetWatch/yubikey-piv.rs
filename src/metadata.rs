@@ -35,10 +35,8 @@ use zeroize::Zeroizing;
 
 use crate::{error::Error, serialization::*, transaction::Transaction, Buffer};
 
-#[cfg(feature = "untested")]
 use crate::{CB_OBJ_MAX, CB_OBJ_TAG_MAX};
 
-#[cfg(feature = "untested")]
 use std::iter;
 
 const TAG_ADMIN: u8 = 0x80;
@@ -87,7 +85,6 @@ impl<T: MetadataType> Metadata<T> {
     }
 
     /// Write metadata
-    #[cfg(feature = "untested")]
     pub(crate) fn write(&self, txn: &Transaction<'_>) -> Result<(), Error> {
         if self.inner.len() > CB_OBJ_MAX - CB_OBJ_TAG_MAX {
             return Err(Error::GenericError);
@@ -104,7 +101,6 @@ impl<T: MetadataType> Metadata<T> {
     }
 
     /// Delete metadata
-    #[cfg(feature = "untested")]
     pub(crate) fn delete(txn: &Transaction<'_>) -> Result<(), Error> {
         txn.save_object(T::obj_id(), &[])
     }
@@ -127,7 +123,6 @@ impl<T: MetadataType> Metadata<T> {
     }
 
     /// Set metadata item
-    #[cfg(feature = "untested")]
     pub(crate) fn set_item(&mut self, tag: u8, item: &[u8]) -> Result<(), Error> {
         let mut cb_temp: usize = 0;
         let mut tag_temp: u8 = 0;
@@ -214,7 +209,6 @@ impl<T: MetadataType> Metadata<T> {
 }
 
 /// Get the size of a length tag for the given length
-#[cfg(feature = "untested")]
 fn get_length_size(length: usize) -> usize {
     if length < 0x80 {
         1

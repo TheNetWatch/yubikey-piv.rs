@@ -322,7 +322,7 @@ impl YubiKey {
     }
 
     /// Deauthenticate
-    #[cfg(feature = "untested")]
+
     pub fn deauthenticate(&mut self) -> Result<(), Error> {
         let txn = self.begin_transaction()?;
 
@@ -466,7 +466,7 @@ impl YubiKey {
     }
 
     /// Block PUK: permanently prevent the PIN from becoming unblocked
-    #[cfg(feature = "untested")]
+
     pub fn block_puk(yubikey: &mut YubiKey) -> Result<(), Error> {
         let mut puk = [0x30, 0x42, 0x41, 0x44, 0x46, 0x30, 0x30, 0x44];
         let mut tries_remaining: i32 = -1;
@@ -530,21 +530,21 @@ impl YubiKey {
 
     /// Unblock a Personal Identification Number (PIN) using a previously
     /// configured PIN Unblocking Key (PUK).
-    #[cfg(feature = "untested")]
+
     pub fn unblock_pin(&mut self, puk: &[u8], new_pin: &[u8]) -> Result<(), Error> {
         let txn = self.begin_transaction()?;
         txn.change_ref(ChangeRefAction::UnblockPin, puk, new_pin)
     }
 
     /// Fetch an object from the YubiKey
-    #[cfg(feature = "untested")]
+
     pub fn fetch_object(&mut self, object_id: ObjectId) -> Result<Buffer, Error> {
         let txn = self.begin_transaction()?;
         txn.fetch_object(object_id)
     }
 
     /// Save an object
-    #[cfg(feature = "untested")]
+
     pub fn save_object(&mut self, object_id: ObjectId, indata: &mut [u8]) -> Result<(), Error> {
         let txn = self.begin_transaction()?;
         txn.save_object(object_id, indata)
@@ -598,7 +598,7 @@ impl YubiKey {
     /// WARNING: this is a destructive operation which will destroy all keys!
     ///
     /// The reset function is only available when both pins are blocked.
-    #[cfg(feature = "untested")]
+
     pub fn reset_device(&mut self) -> Result<(), Error> {
         let templ = [0, Ins::Reset.code(), 0, 0];
         let txn = self.begin_transaction()?;
